@@ -55,7 +55,9 @@ button{font-family:inherit}
 .art.sm{width:60px; height:60px; border-radius:15px}
 .art.sm svg{width:30px; height:30px}
 .art.lg{
-  width:min(66vw,250px); height:min(66vw,250px); border-radius:34px;
+  /* גם גובה המסך נספר, כדי שבטלפון נמוך הפקדים לא ייצאו מהמסך */
+  width:min(64vw,34vh,250px); height:min(64vw,34vh,250px);
+  border-radius:clamp(20px,5vw,34px);
   box-shadow:0 26px 60px rgba(0,0,0,.55);
 }
 .art.lg svg{width:40%; height:40%; stroke-width:1.5}
@@ -121,7 +123,7 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
 /* ---------- מסך הנגן ---------- */
 #playerView{
   position:fixed; inset:0; z-index:20; background:var(--bg);
-  display:flex; flex-direction:column; overflow:hidden;
+  display:flex; flex-direction:column; overflow-y:auto;
 }
 .glow{                               /* הצבע של השיר ממלא את הרקע */
   position:absolute; inset:0; pointer-events:none;
@@ -146,7 +148,7 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
   font-size:11.5px; font-weight:700; letter-spacing:.16em; color:rgba(255,255,255,.62);
 }
 .stage{
-  position:relative; z-index:1; flex:1; min-height:0;
+  position:relative; z-index:1; flex:1 1 auto; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:4px; text-align:center; padding:8px 24px;
 }
@@ -178,7 +180,7 @@ input[type=range]{
   gap:12px; padding-top:10px;
 }
 .pcontrols button{
-  border:none; background:transparent; color:var(--ink); cursor:pointer;
+  flex:none; border:none; background:transparent; color:var(--ink); cursor:pointer;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
   border-radius:50%; -webkit-tap-highlight-color:transparent;
 }
@@ -197,6 +199,19 @@ input[type=range]{
 }
 .p-next b{color:var(--ink); font-weight:700}
 
+@media (max-width:380px){
+  .panel{padding-inline:14px}
+  .pcontrols{gap:7px}
+  .pcontrols .ctl, .pcontrols .skip{width:48px; height:48px}
+  .pcontrols .ctl svg, .pcontrols .skip svg{width:18px; height:18px}
+  .pcontrols .lbl{font-size:9px}
+  .pcontrols .big{width:68px; height:68px}
+  .pcontrols .big svg{width:26px; height:26px}
+}
+@media (max-height:640px){
+  .p-name{margin-top:16px; font-size:24px}
+  .pcontrols{padding-top:4px}
+}
 :focus-visible{outline:3px solid #9FE870; outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
 </style>
@@ -272,6 +287,7 @@ input[type=range]{
 const $ = id => document.getElementById(id);
 const audio = $('audio');
 let SONGS = [], current = null, playing = false, seeking = false, lastSave = 0, query = '';
+let listScroll = 0, buffering = false;
 
 /* ---------- עטיפות: צבע וסמל לכל שיר לפי הנושא ---------- */
 const G = {
@@ -409,6 +425,7 @@ function openSong(id, mode) {
   art.style.setProperty('--c2', c2);
   art.innerHTML = '<svg viewBox="0 0 24 24">' + G[look(id)[2]] + '</svg>';
   $('pName').textContent = song.name;
+  if (!$('listView').hidden) listScroll = window.scrollY;
   $('listView').hidden = true;
   $('playerView').hidden = false;
   window.scrollTo(0, 0);
@@ -425,6 +442,7 @@ function showList(push) {
   $('playerView').hidden = true;
   $('listView').hidden = false;
   renderList();
+  requestAnimationFrame(() => window.scrollTo(0, listScroll));
   if (push) history.pushState({ song: null }, '', location.pathname + location.search);
 }
 
@@ -461,7 +479,7 @@ function paint() {
   $('nextSong').disabled = !next;
   $('prevSong').disabled = !prev;
   $('play').setAttribute('aria-label', playing ? 'השהה' : 'נגן');
-  $('pState').textContent = playing ? 'מתנגן' : 'מושהה';
+  $('pState').textContent = buffering ? 'טוען…' : (playing ? 'מתנגן' : 'מושהה');
   if (current && 'mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: current.name, artist: 'גן ניצנים' });
@@ -488,7 +506,16 @@ audio.addEventListener('ended', () => {
   if (next) { openSong(next.id, 'replace'); return; }
   playing = false; paint();
 });
-audio.addEventListener('error', () => { $('pState').textContent = 'שגיאה בטעינה'; });
+const setBuffering = on => { buffering = on; paint(); };
+audio.addEventListener('waiting',    () => setBuffering(true));
+audio.addEventListener('stalled',    () => setBuffering(true));
+audio.addEventListener('playing',    () => setBuffering(false));
+audio.addEventListener('canplay',    () => setBuffering(false));
+audio.addEventListener('loadeddata', () => setBuffering(false));
+audio.addEventListener('error', () => {
+  buffering = false;
+  $('pState').textContent = 'לא הצלחתי לטעון · בדקו את החיבור';
+});
 
 $('play').addEventListener('click', () => playing ? audio.pause() : audio.play().catch(() => {}));
 $('nextSong').addEventListener('click', () => { const n = neighbour(1); if (n) openSong(n.id, 'replace'); });
