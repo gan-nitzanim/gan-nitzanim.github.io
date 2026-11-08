@@ -1,0 +1,128 @@
+[
+ {
+  "id": "morning",
+  "name": "שירי בוקר",
+  "file": "audio/morning.mp3",
+  "seconds": 1137.5,
+  "bytes": 27300908
+ },
+ {
+  "id": "kids",
+  "name": "שירי ילדים",
+  "file": "audio/kids.mp3",
+  "seconds": 2519.2,
+  "bytes": 25192962
+ },
+ {
+  "id": "garden",
+  "name": "גינה",
+  "file": "audio/garden.mp3",
+  "seconds": 1166.9,
+  "bytes": 28005935
+ },
+ {
+  "id": "rosh",
+  "name": "ראש השנה",
+  "file": "audio/rosh.mp3",
+  "seconds": 2998.6,
+  "bytes": 23989787
+ },
+ {
+  "id": "sukkot",
+  "name": "סוכות",
+  "file": "audio/sukkot.mp3",
+  "seconds": 1672.6,
+  "bytes": 16726032
+ },
+ {
+  "id": "autumn",
+  "name": "שירי סתיו",
+  "file": "audio/autumn.mp3",
+  "seconds": 2498.0,
+  "bytes": 24980357
+ },
+ {
+  "id": "hanukkah",
+  "name": "חנוכה",
+  "file": "audio/hanukkah.mp3",
+  "seconds": 2093.9,
+  "bytes": 20939844
+ },
+ {
+  "id": "tubishvat",
+  "name": "ט״ו בשבט",
+  "file": "audio/tubishvat.mp3",
+  "seconds": 2772.6,
+  "bytes": 27726438
+ },
+ {
+  "id": "winter",
+  "name": "שירי חורף",
+  "file": "audio/winter.mp3",
+  "seconds": 1157.7,
+  "bytes": 27786168
+ },
+ {
+  "id": "family",
+  "name": "יום המשפחה",
+  "file": "audio/family.mp3",
+  "seconds": 2269.0,
+  "bytes": 22690983
+ },
+ {
+  "id": "spring-1",
+  "name": "אביב ופסח – חלק א׳",
+  "file": "audio/spring-1.mp3",
+  "seconds": 1593.1,
+  "bytes": 38239986
+ },
+ {
+  "id": "spring-2",
+  "name": "אביב ופסח – חלק ב׳",
+  "file": "audio/spring-2.mp3",
+  "seconds": 1688.9,
+  "bytes": 40535340
+ },
+ {
+  "id": "spring-3",
+  "name": "אביב ופסח – חלק ג׳",
+  "file": "audio/spring-3.mp3",
+  "seconds": 1477.8,
+  "bytes": 35468465
+ },
+ {
+  "id": "independence",
+  "name": "יום העצמאות",
+  "file": "audio/independence.mp3",
+  "seconds": 2842.6,
+  "bytes": 28426299
+ },
+ {
+  "id": "lagbaomer",
+  "name": "ל״ג בעומר",
+  "file": "audio/lagbaomer.mp3",
+  "seconds": 1461.2,
+  "bytes": 35069675
+ },
+ {
+  "id": "shavuot",
+  "name": "שבועות",
+  "file": "audio/shavuot.mp3",
+  "seconds": 2258.9,
+  "bytes": 54215249
+ },
+ {
+  "id": "summer-1",
+  "name": "שירי קיץ – חלק א׳",
+  "file": "audio/summer-1.mp3",
+  "seconds": 2040.6,
+  "bytes": 20406453
+ },
+ {
+  "id": "summer-2",
+  "name": "שירי קיץ – חלק ב׳",
+  "file": "audio/summer-2.mp3",
+  "seconds": 2376.3,
+  "bytes": 23763187
+ }
+]

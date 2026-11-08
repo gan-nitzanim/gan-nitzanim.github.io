@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#00567A">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="גן ניצנים">
+<title>שירים גן ניצנים</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap">
+<style>
+:root{
+  --ground:#EEF3F6; --surface:#FFFFFF; --surface-2:#F6FAFB;
+  --line:#D5DDE3; --ink:#14232C; --muted:#63757F;
+  --brand:#00567A; --brand-2:#003D57; --brand-3:#0B6C93;
+  --on-brand:#FFFFFF; --on-brand-dim:#A8C7D6;
+  --lime:#9FD142; --green:#4E9E45;
+  --shadow:0 10px 30px rgba(0,61,87,.13);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0A141A; --surface:#132430; --surface-2:#172C38;
+    --line:#27404C; --ink:#E6EFF3; --muted:#8EA5B1;
+    --brand:#0C7FAD; --brand-2:#072A3B; --brand-3:#13A0D4;
+    --on-brand:#FFFFFF; --on-brand-dim:#9FBDCB;
+    --lime:#B6E05A; --green:#6BBE5F;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0A141A; --surface:#132430; --surface-2:#172C38;
+  --line:#27404C; --ink:#E6EFF3; --muted:#8EA5B1;
+  --brand:#0C7FAD; --brand-2:#072A3B; --brand-3:#13A0D4;
+  --on-brand:#FFFFFF; --on-brand-dim:#9FBDCB;
+  --lime:#B6E05A; --green:#6BBE5F;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box}
+/* an id selector with display:flex outranks the UA [hidden] rule - keep hidden hidden */
+[hidden]{display:none !important}
+html,body{margin:0; padding:0}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"Assistant",-apple-system,"Segoe UI",system-ui,sans-serif;
+  font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:520px; margin-inline:auto}
+
+/* ---------- list screen ---------- */
+.hero{
+  background:linear-gradient(160deg,var(--brand) 0%,var(--brand-2) 100%);
+  color:var(--on-brand); padding:28px 20px 24px;
+  border-end-start-radius:26px; border-end-end-radius:26px; box-shadow:var(--shadow);
+}
+.eyebrow{margin:0 0 6px; font-size:12px; font-weight:700; letter-spacing:.14em; color:var(--on-brand-dim)}
+.hero h1{font-weight:700; font-size:30px; line-height:1.2; margin:0; letter-spacing:-.01em}
+.hero .meta{margin:8px 0 0; font-size:14px; color:var(--on-brand-dim); font-variant-numeric:tabular-nums}
+
+.filters{padding:18px 16px 4px}
+.search{position:relative}
+.search input{
+  width:100%; font:inherit; color:var(--ink); background:var(--surface);
+  border:1px solid var(--line); border-radius:14px; padding:12px 42px 12px 14px;
+}
+.search input::placeholder{color:var(--muted)}
+.search svg{
+  position:absolute; inset-inline-end:14px; inset-block-start:50%; transform:translateY(-50%);
+  width:18px; height:18px; fill:var(--muted); pointer-events:none;
+}
+ol.tracks{list-style:none; margin:0; padding:12px 14px 30px; display:flex; flex-direction:column; gap:10px}
+.track{
+  display:flex; align-items:center; gap:14px;
+  background:var(--surface); border:1px solid var(--line); border-radius:16px;
+  padding:13px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:border-color .15s ease, transform .12s ease;
+}
+.track:active{transform:scale(.985)}
+.track .go{
+  flex:none; width:46px; height:46px; border-radius:50%;
+  background:var(--brand); color:#fff; display:grid; place-items:center;
+}
+.track.playing{border-color:var(--green)}
+.track.playing .go{background:var(--green)}
+.track.playing .t-sub{color:var(--green); font-weight:700}
+.track .go svg{width:20px; height:20px; fill:currentColor}
+.t-main{min-width:0; flex:1}
+.t-name{display:block; font-weight:700; font-size:16.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.t-sub{display:block; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:1px}
+.empty{text-align:center; color:var(--muted); padding:40px 20px}
+.credit{padding:6px 20px 30px; text-align:center; color:var(--muted); font-size:13px}
+
+/* ---------- player screen ---------- */
+#playerView{
+  position:fixed; inset:0; z-index:20; background:var(--ground);
+  display:flex; flex-direction:column; overflow-y:auto;
+}
+.pbar{padding:calc(14px + env(safe-area-inset-top)) 16px 10px}
+.back{
+  font:inherit; font-weight:700; font-size:15px; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--surface); color:var(--ink);
+  border:1px solid var(--line); border-radius:999px; padding:9px 16px 9px 13px;
+}
+.back svg{width:16px; height:16px; fill:currentColor}
+.stage{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:20px 24px 10px; gap:6px;
+}
+.art{
+  width:150px; height:150px; border-radius:34px; margin-bottom:22px;
+  background:linear-gradient(160deg,var(--brand) 0%,var(--brand-2) 100%);
+  display:grid; place-items:center; box-shadow:var(--shadow);
+}
+.art svg{width:64px; height:64px; fill:#fff; opacity:.92}
+.p-name{margin:0; font-size:27px; font-weight:700; line-height:1.2; letter-spacing:-.01em}
+.p-state{margin:2px 0 0; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums}
+.p-pos{margin:10px 0 0; font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--muted)}
+.p-next{margin:6px 0 0; font-size:13.5px; color:var(--muted)}
+.p-next b{color:var(--ink); font-weight:700}
+.panel{padding:16px 22px calc(26px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:6px}
+/* a time axis reads left-to-right even in an RTL interface - same as
+   WhatsApp voice notes, YouTube and Spotify in Hebrew */
+input[type=range]{direction:ltr; width:100%; margin:0; accent-color:var(--brand); height:24px; background:transparent; cursor:pointer}
+.times{direction:ltr; display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:-6px}
+/* the row follows the timeline above it: previous on the left, next on the right */
+.pcontrols{direction:ltr; display:flex; align-items:center; justify-content:center; gap:12px; padding-top:10px}
+.pcontrols button{
+  font:inherit; border:none; background:transparent; color:var(--ink);
+  cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; border-radius:50%; -webkit-tap-highlight-color:transparent;
+}
+.pcontrols .ctl, .pcontrols .skip{
+  width:60px; height:60px; background:var(--surface);
+  border:1px solid var(--line); color:var(--ink);
+}
+.pcontrols .ctl svg, .pcontrols .skip svg{width:22px; height:22px; fill:currentColor}
+.pcontrols .lbl{font-size:10px; font-weight:700; color:var(--muted); line-height:1; white-space:nowrap}
+.pcontrols .ctl:not(:disabled):active, .pcontrols .skip:active{background:var(--surface-2)}
+.pcontrols button:disabled{opacity:.3; cursor:default}
+.pcontrols .big{
+  width:76px; height:76px; background:var(--brand); color:#fff; flex:none;
+  box-shadow:var(--shadow);
+}
+.pcontrols .big svg{width:32px; height:32px; fill:currentColor}
+button:focus-visible, .track:focus-visible, input:focus-visible{
+  outline:3px solid var(--lime); outline-offset:2px;
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+
+<div id="listView" class="wrap">
+  <header class="hero">
+    <p class="eyebrow">רשימת השמעה</p>
+    <h1>שירים גן ניצנים</h1>
+    <p class="meta" id="heroMeta">טוען…</p>
+  </header>
+
+  <div class="filters">
+    <div class="search">
+      <input type="search" id="q" placeholder="חיפוש שיר" autocomplete="off" aria-label="חיפוש שיר">
+      <svg viewBox="0 0 24 24"><path d="M10 4a6 6 0 104.2 10.3l4.3 4.2 1.4-1.4-4.2-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+    </div>
+  </div>
+
+  <ol class="tracks" id="tracks"></ol>
+  <p class="empty" id="empty" hidden>לא נמצא שיר בשם הזה</p>
+  <p class="credit">לחצו על שיר כדי להשמיע · השירים ממשיכים אחד אחרי השני · אפשר לנעול את המסך</p>
+</div>
+
+<div id="playerView" hidden>
+  <div class="pbar">
+    <button class="back" id="back">
+      <svg viewBox="0 0 24 24"><path d="M10 6l1.4 1.4L7.8 11H20v2H7.8l3.6 3.6L10 18l-6-6z"/></svg>
+      חזרה לרשימה
+    </button>
+  </div>
+
+  <div class="stage">
+    <div class="art"><svg viewBox="0 0 24 24"><path d="M12 3v10.6A4 4 0 1014 17V7h4V3h-6z"/></svg></div>
+    <h2 class="p-name" id="pName"></h2>
+    <p class="p-state" id="pState">מוכן להשמעה</p>
+    <p class="p-pos" id="pPos"></p>
+    <p class="p-next" id="pNext" hidden></p>
+  </div>
+
+  <div class="panel">
+    <input type="range" id="seek" min="0" max="1000" value="0" step="1" aria-label="מיקום בשיר">
+    <div class="times"><span id="tCur">0:00</span><span id="tDur">0:00</span></div>
+    <div class="pcontrols">
+      <button class="ctl" id="prevSong" aria-label="לשיר הקודם">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2.5v12H6zM20 6v12l-9-6z"/></svg><span class="lbl">שיר קודם</span>
+      </button>
+      <button class="skip" id="back15" aria-label="אחורה 15 שניות">
+        <svg viewBox="0 0 24 24"><path d="M12 5V1.5L7.5 6 12 10.5V7a5.5 5.5 0 11-5.5 5.5H4.5A7.5 7.5 0 1012 5z"/></svg>
+        <span class="lbl">15 שנ׳</span>
+      </button>
+      <button class="big" id="play" aria-label="נגן"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+      <button class="skip" id="fwd15" aria-label="קדימה 15 שניות">
+        <svg viewBox="0 0 24 24"><path d="M12 5V1.5L16.5 6 12 10.5V7a5.5 5.5 0 105.5 5.5h2A7.5 7.5 0 1112 5z"/></svg>
+        <span class="lbl">15 שנ׳</span>
+      </button>
+      <button class="ctl" id="nextSong" aria-label="לשיר הבא">
+        <svg viewBox="0 0 24 24"><path d="M15.5 6H18v12h-2.5zM4 6l9 6-9 6z"/></svg><span class="lbl">שיר הבא</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script>
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+let SONGS = [], current = null, playing = false, seeking = false, lastSave = 0;
+let query = '';
+
+const fmt = s => {
+  s = Math.max(0, Math.floor(s || 0));
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  return h ? h + ':' + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0')
+           : m + ':' + String(x).padStart(2, '0');
+};
+const heTime = s => {
+  const h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60);
+  if (!h) return m + ' דקות';
+  return (h === 1 ? 'שעה' : h + ' שעות') + ' ו-' + m + ' דקות';
+};
+const saved = id => { try { return parseFloat(localStorage.getItem('pos:' + id)) || 0; } catch (e) { return 0; } };
+const save = (id, v) => { try { localStorage.setItem('pos:' + id, v); } catch (e) {} };
+
+/* ---------- library ---------- */
+async function load() {
+  const res = await fetch('songs.json', { cache: 'no-cache' });
+  SONGS = await res.json();
+  $('heroMeta').textContent =
+    SONGS.length + ' שירים · ' + heTime(SONGS.reduce((s, x) => s + x.seconds, 0));
+  renderList();
+  openFromHash();
+}
+
+function visible() {
+  const q = query.trim();
+  return SONGS.filter(s => !q || s.name.includes(q));
+}
+
+function renderList() {
+  const rows = visible();
+  $('empty').hidden = rows.length > 0;
+  $('tracks').replaceChildren(...rows.map(s => {
+    const li = document.createElement('li');
+    li.className = 'track' + (current && current.id === s.id && playing ? ' playing' : '');
+    li.tabIndex = 0;
+    li.setAttribute('role', 'button');
+    li.setAttribute('aria-label', 'נגן את ' + s.name);
+    li.innerHTML =
+      '<span class="go"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>' +
+      '<span class="t-main"><span class="t-name"></span>' +
+      '<span class="t-sub"></span></span>';
+    const nowPlaying = current && current.id === s.id && playing;
+    li.querySelector('.t-sub').textContent = nowPlaying ? 'מתנגן עכשיו' : fmt(s.seconds);
+    li.querySelector('.t-name').textContent = s.name;
+    const go = () => openSong(s.id, 'push');
+    li.addEventListener('click', go);
+    li.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+    return li;
+  }));
+}
+
+/* ---------- screens ---------- */
+const idxOf = id => SONGS.findIndex(s => s.id === id);
+const neighbour = d => {
+  const i = idxOf(current && current.id);
+  return i < 0 ? null : (SONGS[i + d] || null);
+};
+/* warm the first chunk of the next file so the handover is near-instant */
+function prefetchNext() {
+  const n = neighbour(1);
+  if (!n) return;
+  fetch(n.file, { headers: { Range: 'bytes=0-262143' } }).catch(() => {});
+}
+
+function openSong(id, mode) {
+  const song = SONGS.find(s => s.id === id);
+  if (!song) return;
+  if (!current || current.id !== id) {
+    current = song;
+    audio.src = song.file;
+    const at = saved(id);
+    if (at > 5 && at < song.seconds - 10) {
+      audio.addEventListener('loadedmetadata', () => { try { audio.currentTime = at; } catch (e) {} }, { once: true });
+    }
+  }
+  $('pName').textContent = song.name;
+  $('listView').hidden = true;
+  $('playerView').hidden = false;
+  window.scrollTo(0, 0);
+  tick();
+  paint();
+  const entry = [{ song: id }, '', '#' + encodeURIComponent(id)];
+  if (mode === 'push') history.pushState(...entry);
+  else if (mode === 'replace') history.replaceState(...entry);
+  audio.play().catch(() => {});   /* the tap that got us here counts as the gesture */
+  prefetchNext();
+}
+
+function showList(push) {
+  $('playerView').hidden = true;
+  $('listView').hidden = false;
+  renderList();
+  if (push) history.pushState({ song: null }, '', location.pathname + location.search);
+}
+
+function openFromHash() {
+  const id = decodeURIComponent((location.hash || '').replace(/^#/, ''));
+  if (id && SONGS.some(s => s.id === id)) {
+    /* someone opened a single-song link: put the list underneath it in history,
+       so Back shows the list instead of leaving the site */
+    history.replaceState({ song: null }, '', location.pathname + location.search);
+    openSong(id, 'push');
+  } else {
+    showList(false);
+  }
+}
+
+$('back').addEventListener('click', () => history.back());
+window.addEventListener('popstate', e => {
+  const id = e.state && e.state.song;
+  if (id) openSong(id, 'none'); else showList(false);
+});
+
+/* ---------- playback ---------- */
+function paint() {
+  const pauseIcon = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+  const playIcon = '<path d="M8 5.5v13l11-6.5z"/>';
+  $('playIcon').innerHTML = playing ? pauseIcon : playIcon;
+  const next = neighbour(1), prev = neighbour(-1);
+  $('pPos').textContent = 'שיר ' + (idxOf(current && current.id) + 1) + ' מתוך ' + SONGS.length;
+  $('pNext').hidden = !next;
+  if (next) $('pNext').innerHTML = 'הבא בתור: <b></b>';
+  if (next) $('pNext').querySelector('b').textContent = next.name;
+  $('nextSong').disabled = !next;
+  $('prevSong').disabled = !prev;
+  $('play').setAttribute('aria-label', playing ? 'השהה' : 'נגן');
+  $('pState').textContent = playing ? 'מתנגן' : 'מושהה';
+  if (current && 'mediaSession' in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: current.name, artist: 'גן ניצנים' });
+    navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
+  }
+}
+function tick() {
+  if (!current) return;
+  const total = audio.duration || current.seconds, cur = audio.currentTime || 0;
+  if (!seeking) $('seek').value = total ? Math.round(cur / total * 1000) : 0;
+  $('tCur').textContent = fmt(cur);
+  $('tDur').textContent = fmt(total);
+}
+audio.addEventListener('play',  () => { playing = true;  paint(); });
+audio.addEventListener('pause', () => { playing = false; paint(); });
+audio.addEventListener('timeupdate', () => {
+  tick();
+  const now = Date.now();
+  if (current && now - lastSave > 4000) { lastSave = now; save(current.id, audio.currentTime); }
+});
+audio.addEventListener('ended', () => {
+  if (current) save(current.id, 0);
+  const next = neighbour(1);
+  if (next) { openSong(next.id, 'replace'); return; }
+  playing = false; paint();
+});
+audio.addEventListener('error', () => { $('pState').textContent = 'שגיאה בטעינה'; });
+
+$('play').addEventListener('click', () => playing ? audio.pause() : audio.play().catch(() => {}));
+$('nextSong').addEventListener('click', () => { const n = neighbour(1); if (n) openSong(n.id, 'replace'); });
+$('prevSong').addEventListener('click', () => { const p = neighbour(-1); if (p) openSong(p.id, 'replace'); });
+$('back15').addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 15); });
+$('fwd15').addEventListener('click', () => {
+  audio.currentTime = Math.min((audio.duration || 0) - 1, audio.currentTime + 15);
+});
+const seek = $('seek');
+['pointerdown', 'touchstart', 'keydown'].forEach(e => seek.addEventListener(e, () => { seeking = true; }));
+seek.addEventListener('input', () => {
+  const total = audio.duration || (current && current.seconds) || 0;
+  $('tCur').textContent = fmt(seek.value / 1000 * total);
+});
+seek.addEventListener('change', () => {
+  seeking = false;
+  const total = audio.duration || (current && current.seconds) || 0;
+  if (total) audio.currentTime = seek.value / 1000 * total;
+});
+if ('mediaSession' in navigator) {
+  try {
+    navigator.mediaSession.setActionHandler('play', () => audio.play().catch(() => {}));
+    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+    navigator.mediaSession.setActionHandler('nexttrack', () => { const n = neighbour(1); if (n) openSong(n.id, 'replace'); });
+    navigator.mediaSession.setActionHandler('previoustrack', () => { const p = neighbour(-1); if (p) openSong(p.id, 'replace'); });
+    navigator.mediaSession.setActionHandler('seekto', d => {
+      if (d.seekTime != null) audio.currentTime = d.seekTime;
+    });
+  } catch (e) {}
+}
+$('q').addEventListener('input', e => { query = e.target.value; renderList(); });
+window.addEventListener('pagehide', () => { if (current) save(current.id, audio.currentTime); });
+
+load().catch(() => {
+  $('heroMeta').textContent = 'לא ניתן לטעון את רשימת השירים';
+});
+</script>
+</body>
+</html>

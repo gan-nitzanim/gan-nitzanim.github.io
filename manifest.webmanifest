@@ -1,0 +1,31 @@
+{
+ "name": "שירים גן ניצנים",
+ "short_name": "גן ניצנים",
+ "description": "רשימת ההשמעה של גן ניצנים",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "background_color": "#EEF3F6",
+ "theme_color": "#00567A",
+ "lang": "he",
+ "dir": "rtl",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
