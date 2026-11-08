@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#00567A">
+<meta name="theme-color" content="#0B0F16">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -12,183 +12,232 @@
 <meta name="apple-mobile-web-app-title" content="גן ניצנים">
 <title>שירים גן ניצנים</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap">
 <style>
+/* נגן מוזיקה - מראה כהה אחד ומכוון, כדי שעטיפות הצבע של השירים יבלטו */
 :root{
-  --ground:#EEF3F6; --surface:#FFFFFF; --surface-2:#F6FAFB;
-  --line:#D5DDE3; --ink:#14232C; --muted:#63757F;
-  --brand:#00567A; --brand-2:#003D57; --brand-3:#0B6C93;
-  --on-brand:#FFFFFF; --on-brand-dim:#A8C7D6;
-  --lime:#9FD142; --green:#4E9E45;
-  --shadow:0 10px 30px rgba(0,61,87,.13);
+  color-scheme:dark;
+  --bg:#0B0F16;
+  --bg-2:#121825;
+  --card:#161E2C;
+  --line:#242E40;
+  --ink:#F2F5F9;
+  --muted:#93A1B5;
+  --muted-2:#6B7A91;
+  --c1:#5B8DEF; --c2:#2C4C9B;      /* צבע השיר הפעיל, נדרס מהקוד */
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --ground:#0A141A; --surface:#132430; --surface-2:#172C38;
-    --line:#27404C; --ink:#E6EFF3; --muted:#8EA5B1;
-    --brand:#0C7FAD; --brand-2:#072A3B; --brand-3:#13A0D4;
-    --on-brand:#FFFFFF; --on-brand-dim:#9FBDCB;
-    --lime:#B6E05A; --green:#6BBE5F;
-    --shadow:0 10px 30px rgba(0,0,0,.45);
-  }
-}
-:root[data-theme="dark"]{
-  --ground:#0A141A; --surface:#132430; --surface-2:#172C38;
-  --line:#27404C; --ink:#E6EFF3; --muted:#8EA5B1;
-  --brand:#0C7FAD; --brand-2:#072A3B; --brand-3:#13A0D4;
-  --on-brand:#FFFFFF; --on-brand-dim:#9FBDCB;
-  --lime:#B6E05A; --green:#6BBE5F;
-  --shadow:0 10px 30px rgba(0,0,0,.45);
-}
-
 *{box-sizing:border-box}
-/* an id selector with display:flex outranks the UA [hidden] rule - keep hidden hidden */
 [hidden]{display:none !important}
-html,body{margin:0; padding:0}
+html,body{margin:0; padding:0; background:var(--bg)}
 body{
-  background:var(--ground); color:var(--ink);
+  color:var(--ink);
   font-family:"Assistant",-apple-system,"Segoe UI",system-ui,sans-serif;
   font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:520px; margin-inline:auto}
+button{font-family:inherit}
 
-/* ---------- list screen ---------- */
-.hero{
-  background:linear-gradient(160deg,var(--brand) 0%,var(--brand-2) 100%);
-  color:var(--on-brand); padding:28px 20px 24px;
-  border-end-start-radius:26px; border-end-end-radius:26px; box-shadow:var(--shadow);
+/* ---------- עטיפת שיר ---------- */
+.art{
+  position:relative; flex:none; display:grid; place-items:center;
+  background:linear-gradient(145deg, var(--c1) 0%, var(--c2) 100%);
+  overflow:hidden;
 }
-.eyebrow{margin:0 0 6px; font-size:12px; font-weight:700; letter-spacing:.14em; color:var(--on-brand-dim)}
-.hero h1{font-weight:700; font-size:30px; line-height:1.2; margin:0; letter-spacing:-.01em}
-.hero .meta{margin:8px 0 0; font-size:14px; color:var(--on-brand-dim); font-variant-numeric:tabular-nums}
+.art::after{                      /* ברק עדין בפינה, כמו עטיפת אלבום */
+  content:""; position:absolute; inset:0;
+  background:radial-gradient(120% 90% at 18% 8%, rgba(255,255,255,.34), transparent 60%);
+}
+.art svg{
+  position:relative; z-index:1;
+  fill:none; stroke:#fff; stroke-width:1.7;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.art.sm{width:60px; height:60px; border-radius:15px}
+.art.sm svg{width:30px; height:30px}
+.art.lg{
+  width:min(66vw,250px); height:min(66vw,250px); border-radius:34px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55);
+}
+.art.lg svg{width:40%; height:40%; stroke-width:1.5}
 
-.filters{padding:18px 16px 4px}
-.search{position:relative}
+/* ---------- מסך הרשימה ---------- */
+#listView{max-width:560px; margin-inline:auto; padding:0 16px 40px}
+.top{padding:30px 4px 18px}
+.top h1{
+  margin:0; font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1.15;
+}
+.top .meta{
+  margin:7px 0 0; font-size:14.5px; color:var(--muted); font-variant-numeric:tabular-nums;
+}
+.playall{
+  margin-top:18px; width:100%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  font-size:16px; font-weight:700; color:#0B0F16;
+  background:linear-gradient(135deg,#9FE870,#4FD1A5);
+  border:none; border-radius:16px; padding:14px;
+  -webkit-tap-highlight-color:transparent;
+}
+.playall svg{width:19px; height:19px; fill:currentColor}
+.playall:active{transform:scale(.99)}
+
+.search{position:relative; margin:18px 0 6px}
 .search input{
-  width:100%; font:inherit; color:var(--ink); background:var(--surface);
+  width:100%; font:inherit; color:var(--ink); background:var(--card);
   border:1px solid var(--line); border-radius:14px; padding:12px 42px 12px 14px;
 }
-.search input::placeholder{color:var(--muted)}
+.search input::placeholder{color:var(--muted-2)}
 .search svg{
   position:absolute; inset-inline-end:14px; inset-block-start:50%; transform:translateY(-50%);
-  width:18px; height:18px; fill:var(--muted); pointer-events:none;
+  width:18px; height:18px; fill:var(--muted-2); pointer-events:none;
 }
-ol.tracks{list-style:none; margin:0; padding:12px 14px 30px; display:flex; flex-direction:column; gap:10px}
-.track{
-  display:flex; align-items:center; gap:14px;
-  background:var(--surface); border:1px solid var(--line); border-radius:16px;
-  padding:13px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  transition:border-color .15s ease, transform .12s ease;
-}
-.track:active{transform:scale(.985)}
-.track .go{
-  flex:none; width:46px; height:46px; border-radius:50%;
-  background:var(--brand); color:#fff; display:grid; place-items:center;
-}
-.track.playing{border-color:var(--green)}
-.track.playing .go{background:var(--green)}
-.track.playing .t-sub{color:var(--green); font-weight:700}
-.track .go svg{width:20px; height:20px; fill:currentColor}
-.t-main{min-width:0; flex:1}
-.t-name{display:block; font-weight:700; font-size:16.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-.t-sub{display:block; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:1px}
-.empty{text-align:center; color:var(--muted); padding:40px 20px}
-.credit{padding:6px 20px 30px; text-align:center; color:var(--muted); font-size:13px}
 
-/* ---------- player screen ---------- */
+ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direction:column}
+.track{
+  display:flex; align-items:center; gap:14px; padding:9px 6px;
+  border-radius:16px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:background .15s ease;
+}
+.track:active{background:var(--bg-2)}
+.t-main{min-width:0; flex:1}
+.t-name{
+  display:block; font-weight:700; font-size:16.5px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.t-sub{
+  display:block; font-size:13px; color:var(--muted); margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+.track.playing .t-name{color:#9FE870}
+.track.playing .t-sub{color:#9FE870; font-weight:700}
+.bars{display:inline-flex; align-items:flex-end; gap:2px; height:11px; margin-inline-end:6px; vertical-align:-1px}
+.bars i{width:2.5px; background:#9FE870; border-radius:1px; animation:eq .9s ease-in-out infinite}
+.bars i:nth-child(1){height:40%; animation-delay:-.2s}
+.bars i:nth-child(2){height:100%; animation-delay:-.5s}
+.bars i:nth-child(3){height:65%}
+@keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+.empty{text-align:center; color:var(--muted); padding:40px 20px}
+.foot{padding:26px 10px 0; text-align:center; color:var(--muted-2); font-size:12.5px; line-height:1.7}
+
+/* ---------- מסך הנגן ---------- */
 #playerView{
-  position:fixed; inset:0; z-index:20; background:var(--ground);
-  display:flex; flex-direction:column; overflow-y:auto;
+  position:fixed; inset:0; z-index:20; background:var(--bg);
+  display:flex; flex-direction:column; overflow:hidden;
 }
-.pbar{padding:calc(14px + env(safe-area-inset-top)) 16px 10px}
+.glow{                               /* הצבע של השיר ממלא את הרקע */
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(90% 55% at 50% 2%, var(--c1), transparent 70%),
+    radial-gradient(70% 45% at 50% 0%, var(--c2), transparent 75%);
+  opacity:.26; transition:opacity .4s ease;
+}
+.pbar{
+  position:relative; z-index:1; flex:none;
+  padding:calc(12px + env(safe-area-inset-top)) 16px 4px;
+  display:flex; align-items:center; gap:12px;
+}
 .back{
-  font:inherit; font-weight:700; font-size:15px; cursor:pointer;
-  display:inline-flex; align-items:center; gap:8px;
-  background:var(--surface); color:var(--ink);
-  border:1px solid var(--line); border-radius:999px; padding:9px 16px 9px 13px;
+  cursor:pointer; display:grid; place-items:center; flex:none;
+  width:42px; height:42px; border-radius:50%;
+  background:rgba(255,255,255,.1); color:var(--ink); border:none;
+  -webkit-tap-highlight-color:transparent;
 }
-.back svg{width:16px; height:16px; fill:currentColor}
+.back svg{width:19px; height:19px; fill:currentColor}
+.pbar-label{
+  font-size:11.5px; font-weight:700; letter-spacing:.16em; color:rgba(255,255,255,.62);
+}
 .stage{
-  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:20px 24px 10px; gap:6px;
+  position:relative; z-index:1; flex:1; min-height:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; text-align:center; padding:8px 24px;
 }
-.art{
-  width:150px; height:150px; border-radius:34px; margin-bottom:22px;
-  background:linear-gradient(160deg,var(--brand) 0%,var(--brand-2) 100%);
-  display:grid; place-items:center; box-shadow:var(--shadow);
+.p-name{
+  margin:26px 0 0; font-size:28px; font-weight:800; line-height:1.2; letter-spacing:-.02em;
+  max-width:100%;
 }
-.art svg{width:64px; height:64px; fill:#fff; opacity:.92}
-.p-name{margin:0; font-size:27px; font-weight:700; line-height:1.2; letter-spacing:-.01em}
-.p-state{margin:2px 0 0; font-size:14px; color:var(--muted); font-variant-numeric:tabular-nums}
-.p-pos{margin:10px 0 0; font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--muted)}
-.p-next{margin:6px 0 0; font-size:13.5px; color:var(--muted)}
-.p-next b{color:var(--ink); font-weight:700}
-.panel{padding:16px 22px calc(26px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:6px}
-/* a time axis reads left-to-right even in an RTL interface - same as
-   WhatsApp voice notes, YouTube and Spotify in Hebrew */
-input[type=range]{direction:ltr; width:100%; margin:0; accent-color:var(--brand); height:24px; background:transparent; cursor:pointer}
-.times{direction:ltr; display:flex; justify-content:space-between; font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; margin-top:-6px}
-/* the row follows the timeline above it: previous on the left, next on the right */
-.pcontrols{direction:ltr; display:flex; align-items:center; justify-content:center; gap:12px; padding-top:10px}
+.p-state{margin:6px 0 0; font-size:14px; color:rgba(255,255,255,.66)}
+.p-pos{
+  margin:4px 0 0; font-size:11.5px; font-weight:700; letter-spacing:.14em;
+  color:rgba(255,255,255,.45); font-variant-numeric:tabular-nums;
+}
+.panel{
+  position:relative; z-index:1; flex:none;
+  padding:10px 24px calc(20px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; gap:4px;
+}
+/* ציר זמן נקרא משמאל לימין גם בממשק עברי */
+input[type=range]{
+  direction:ltr; width:100%; margin:0; height:26px; cursor:pointer;
+  background:transparent; accent-color:#fff;
+}
+.times{
+  direction:ltr; display:flex; justify-content:space-between; margin-top:-6px;
+  font-size:12px; color:rgba(255,255,255,.6); font-variant-numeric:tabular-nums;
+}
+.pcontrols{
+  direction:ltr; display:flex; align-items:center; justify-content:center;
+  gap:12px; padding-top:10px;
+}
 .pcontrols button{
-  font:inherit; border:none; background:transparent; color:var(--ink);
-  cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:3px; border-radius:50%; -webkit-tap-highlight-color:transparent;
+  border:none; background:transparent; color:var(--ink); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  border-radius:50%; -webkit-tap-highlight-color:transparent;
 }
-.pcontrols .ctl, .pcontrols .skip{
-  width:60px; height:60px; background:var(--surface);
-  border:1px solid var(--line); color:var(--ink);
-}
-.pcontrols .ctl svg, .pcontrols .skip svg{width:22px; height:22px; fill:currentColor}
-.pcontrols .lbl{font-size:10px; font-weight:700; color:var(--muted); line-height:1; white-space:nowrap}
-.pcontrols .ctl:not(:disabled):active, .pcontrols .skip:active{background:var(--surface-2)}
-.pcontrols button:disabled{opacity:.3; cursor:default}
+.pcontrols .ctl, .pcontrols .skip{width:58px; height:58px; background:rgba(255,255,255,.09)}
+.pcontrols .ctl svg, .pcontrols .skip svg{width:21px; height:21px; fill:currentColor}
+.pcontrols .lbl{font-size:9.5px; font-weight:700; color:rgba(255,255,255,.6); white-space:nowrap}
 .pcontrols .big{
-  width:76px; height:76px; background:var(--brand); color:#fff; flex:none;
-  box-shadow:var(--shadow);
+  width:78px; height:78px; background:#fff; color:#0B0F16; flex:none;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
 }
-.pcontrols .big svg{width:32px; height:32px; fill:currentColor}
-button:focus-visible, .track:focus-visible, input:focus-visible{
-  outline:3px solid var(--lime); outline-offset:2px;
+.pcontrols .big svg{width:30px; height:30px; fill:currentColor}
+.pcontrols button:active{transform:scale(.96)}
+.pcontrols button:disabled{opacity:.28; cursor:default}
+.p-next{
+  margin:14px 0 0; text-align:center; font-size:13px; color:rgba(255,255,255,.55);
 }
-@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+.p-next b{color:var(--ink); font-weight:700}
+
+:focus-visible{outline:3px solid #9FE870; outline-offset:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
 </style>
 </head>
 <body>
 
-<div id="listView" class="wrap">
-  <header class="hero">
-    <p class="eyebrow">רשימת השמעה</p>
+<div id="listView">
+  <header class="top">
     <h1>שירים גן ניצנים</h1>
     <p class="meta" id="heroMeta">טוען…</p>
+    <button class="playall" id="playAll">
+      <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
+      נגן הכול
+    </button>
   </header>
 
-  <div class="filters">
-    <div class="search">
-      <input type="search" id="q" placeholder="חיפוש שיר" autocomplete="off" aria-label="חיפוש שיר">
-      <svg viewBox="0 0 24 24"><path d="M10 4a6 6 0 104.2 10.3l4.3 4.2 1.4-1.4-4.2-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
-    </div>
+  <div class="search">
+    <input type="search" id="q" placeholder="חיפוש שיר" autocomplete="off" aria-label="חיפוש שיר">
+    <svg viewBox="0 0 24 24"><path d="M10 4a6 6 0 104.2 10.3l4.3 4.2 1.4-1.4-4.2-4.3A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
   </div>
 
   <ol class="tracks" id="tracks"></ol>
   <p class="empty" id="empty" hidden>לא נמצא שיר בשם הזה</p>
-  <p class="credit">לחצו על שיר כדי להשמיע · השירים ממשיכים אחד אחרי השני · אפשר לנעול את המסך</p>
+  <p class="foot">השירים ממשיכים אחד אחרי השני · אפשר לנעול את המסך</p>
 </div>
 
 <div id="playerView" hidden>
+  <div class="glow" id="glow"></div>
+
   <div class="pbar">
-    <button class="back" id="back">
+    <button class="back" id="back" aria-label="חזרה לרשימה">
       <svg viewBox="0 0 24 24"><path d="M10 6l1.4 1.4L7.8 11H20v2H7.8l3.6 3.6L10 18l-6-6z"/></svg>
-      חזרה לרשימה
     </button>
+    <span class="pbar-label">מתנגן עכשיו</span>
   </div>
 
   <div class="stage">
-    <div class="art"><svg viewBox="0 0 24 24"><path d="M12 3v10.6A4 4 0 1014 17V7h4V3h-6z"/></svg></div>
+    <div class="art lg" id="pArt"></div>
     <h2 class="p-name" id="pName"></h2>
     <p class="p-state" id="pState">מוכן להשמעה</p>
     <p class="p-pos" id="pPos"></p>
-    <p class="p-next" id="pNext" hidden></p>
   </div>
 
   <div class="panel">
@@ -199,10 +248,12 @@ button:focus-visible, .track:focus-visible, input:focus-visible{
         <svg viewBox="0 0 24 24"><path d="M6 6h2.5v12H6zM20 6v12l-9-6z"/></svg><span class="lbl">שיר קודם</span>
       </button>
       <button class="skip" id="back15" aria-label="אחורה 15 שניות">
-        <svg viewBox="0 0 24 24"><path d="M12 5V1.5L7.5 6 12 10.5V7a5.5 5.5 0 11-5.5 5.5H4.5A7.5 7.5 0 1012 5z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 5V1.5L7.5 6 12 10.5V7a5.5 5.5 0 11-5.5 5.5h-2A7.5 7.5 0 1012 5z"/></svg>
         <span class="lbl">15 שנ׳</span>
       </button>
-      <button class="big" id="play" aria-label="נגן"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></button>
+      <button class="big" id="play" aria-label="נגן">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
+      </button>
       <button class="skip" id="fwd15" aria-label="קדימה 15 שניות">
         <svg viewBox="0 0 24 24"><path d="M12 5V1.5L16.5 6 12 10.5V7a5.5 5.5 0 105.5 5.5h2A7.5 7.5 0 1112 5z"/></svg>
         <span class="lbl">15 שנ׳</span>
@@ -211,6 +262,7 @@ button:focus-visible, .track:focus-visible, input:focus-visible{
         <svg viewBox="0 0 24 24"><path d="M15.5 6H18v12h-2.5zM4 6l9 6-9 6z"/></svg><span class="lbl">שיר הבא</span>
       </button>
     </div>
+    <p class="p-next" id="pNext" hidden></p>
   </div>
 </div>
 
@@ -219,8 +271,52 @@ button:focus-visible, .track:focus-visible, input:focus-visible{
 <script>
 const $ = id => document.getElementById(id);
 const audio = $('audio');
-let SONGS = [], current = null, playing = false, seeking = false, lastSave = 0;
-let query = '';
+let SONGS = [], current = null, playing = false, seeking = false, lastSave = 0, query = '';
+
+/* ---------- עטיפות: צבע וסמל לכל שיר לפי הנושא ---------- */
+const G = {
+  sun:   '<circle cx="12" cy="12" r="4"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>',
+  balloon:'<path d="M12 3.4c3 0 5.3 2.3 5.3 5.3 0 3.4-3.2 6.2-5.3 7.2-2.1-1-5.3-3.8-5.3-7.2 0-3 2.3-5.3 5.3-5.3z"/><path d="M12 15.9v1.5"/><path d="M12 17.4c-1.2.9.9 1.9-.3 2.9"/>',
+  flower:'<circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="6.7" r="2.7"/><circle cx="17" cy="10.4" r="2.7"/><circle cx="15.1" cy="16.3" r="2.7"/><circle cx="8.9" cy="16.3" r="2.7"/><circle cx="7" cy="10.4" r="2.7"/>',
+  apple: '<path d="M12 7.6c2.8 0 5 2.4 5 5.6 0 3.3-2.2 6.4-5 6.4s-5-3.1-5-6.4c0-3.2 2.2-5.6 5-5.6z"/><path d="M12 7.6V4.3"/><path d="M12 4.3l2.3-1.5M12 4.3L9.7 2.8"/>',
+  palm:  '<path d="M12 20.5V9.2"/><path d="M12 9.2C10 5.8 7 4.6 4 5c2 2.9 4.8 4.3 8 4.2z"/><path d="M12 9.2c2-3.4 5-4.6 8-4.2-2 2.9-4.8 4.3-8 4.2z"/>',
+  leaf:  '<path d="M19.6 4.4C10 4.4 4.4 9 4.4 15.5c0 1.6.4 3 .9 4 5.7.6 14.3-2.6 14.3-15.1z"/><path d="M5.4 19.6C8.5 15 12.6 11.4 17.1 9.4"/>',
+  candle:'<path d="M9.4 10.6h5.2v9.9H9.4z"/><path d="M12 10.6V8.9"/><path d="M12 3.4c1.7 1.7 2.7 2.7 2.7 4.2A2.7 2.7 0 0112 10.3a2.7 2.7 0 01-2.7-2.7c0-1.5 1-2.5 2.7-4.2z"/>',
+  fire:  '<path d="M12 3.4c3.1 3.5 5.6 5.7 5.6 9.4A5.6 5.6 0 0112 18.5a5.6 5.6 0 01-5.6-5.7c0-3.7 2.5-5.9 5.6-9.4z"/><path d="M12 11c1.3 1.6 2.3 2.5 2.3 4a2.3 2.3 0 11-4.6 0c0-1.5 1-2.4 2.3-4z"/>',
+  tree:  '<path d="M12 20.6v-3.8"/><path d="M12 3.4L7.4 9.6h9.2z"/><path d="M12 8.4l-5.6 8.4h11.2z"/>',
+  snow:  '<path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9"/><path d="M9.2 5L12 6.7 14.8 5M9.2 19L12 17.3l2.8 1.7"/>',
+  heart: '<path d="M12 19.6s-7.1-4.4-7.1-9.1A3.95 3.95 0 0112 8.3a3.95 3.95 0 017.1 2.2c0 4.7-7.1 9.1-7.1 9.1z"/>',
+  flag:  '<path d="M6 21.2V3.2"/><path d="M6 4.7h13.2l-2.7 3.7 2.7 3.7H6z"/>',
+  wheat: '<path d="M12 21V8.8"/><path d="M12 8.8c0-2 1.3-3.3 3.1-3.3 0 2-1.3 3.3-3.1 3.3zM12 8.8c0-2-1.3-3.3-3.1-3.3 0 2 1.3 3.3 3.1 3.3z"/><path d="M12 13.4c0-2 1.3-3.3 3.1-3.3 0 2-1.3 3.3-3.1 3.3zM12 13.4c0-2-1.3-3.3-3.1-3.3 0 2 1.3 3.3 3.1 3.3z"/>',
+  wave:  '<circle cx="12" cy="8.2" r="3.3"/><path d="M3 16c1.5 0 1.5 1.6 3 1.6S7.5 16 9 16s1.5 1.6 3 1.6S13.5 16 15 16s1.5 1.6 3 1.6S19.5 16 21 16"/>',
+  note:  '<path d="M9.2 18V6.2l10-2.1v11.8"/><circle cx="6.6" cy="18" r="2.6"/><circle cx="16.6" cy="15.9" r="2.6"/>'
+};
+const LOOKS = {
+  morning:       ['#FFC46B', '#F0702F', 'sun'],
+  kids:          ['#FF84C2', '#B23FD0', 'balloon'],
+  garden:        ['#7EE0A1', '#2A9D6B', 'flower'],
+  rosh:          ['#FF9A76', '#B8232B', 'apple'],
+  sukkot:        ['#EBBE72', '#9A6425', 'palm'],
+  autumn:        ['#F7A95C', '#B14A1E', 'leaf'],
+  hanukkah:      ['#FFDC80', '#5460C4', 'candle'],
+  tubishvat:     ['#A6DD6B', '#2F7D3C', 'tree'],
+  winter:        ['#97D4FF', '#2F62CE', 'snow'],
+  family:        ['#FFA0B4', '#CF4571', 'heart'],
+  'spring-1':    ['#C3EC7E', '#46A06A', 'flower'],
+  'spring-2':    ['#AEE88E', '#3C9A72', 'flower'],
+  'spring-3':    ['#9CE3A4', '#348F79', 'flower'],
+  independence:  ['#8CC4FF', '#2652BE', 'flag'],
+  lagbaomer:     ['#FFC05C', '#C9341C', 'fire'],
+  shavuot:       ['#F7DC90', '#BE9234', 'wheat'],
+  'summer-1':    ['#6FE3D2', '#1A86C2', 'wave'],
+  'summer-2':    ['#5FD9E0', '#1570B8', 'wave']
+};
+const look = id => LOOKS[id] || ['#7E8CA8', '#3B475E', 'note'];
+const artHTML = (id, size) => {
+  const [c1, c2, g] = look(id);
+  return '<span class="art ' + size + '" style="--c1:' + c1 + '; --c2:' + c2 + '">' +
+         '<svg viewBox="0 0 24 24">' + G[g] + '</svg></span>';
+};
 
 const fmt = s => {
   s = Math.max(0, Math.floor(s || 0));
@@ -229,14 +325,16 @@ const fmt = s => {
            : m + ':' + String(x).padStart(2, '0');
 };
 const heTime = s => {
-  const h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60);
+  let h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60);
+  if (m === 60) { h += 1; m = 0; }
   if (!h) return m + ' דקות';
-  return (h === 1 ? 'שעה' : h + ' שעות') + ' ו-' + m + ' דקות';
+  const hours = h === 1 ? 'שעה' : h + ' שעות';
+  return m ? hours + ' ו-' + m + ' דקות' : hours;
 };
 const saved = id => { try { return parseFloat(localStorage.getItem('pos:' + id)) || 0; } catch (e) { return 0; } };
 const save = (id, v) => { try { localStorage.setItem('pos:' + id, v); } catch (e) {} };
 
-/* ---------- library ---------- */
+/* ---------- הספרייה ---------- */
 async function load() {
   const res = await fetch('songs.json', { cache: 'no-cache' });
   SONGS = await res.json();
@@ -255,18 +353,21 @@ function renderList() {
   const rows = visible();
   $('empty').hidden = rows.length > 0;
   $('tracks').replaceChildren(...rows.map(s => {
+    const nowPlaying = current && current.id === s.id && playing;
     const li = document.createElement('li');
-    li.className = 'track' + (current && current.id === s.id && playing ? ' playing' : '');
+    li.className = 'track' + (nowPlaying ? ' playing' : '');
     li.tabIndex = 0;
     li.setAttribute('role', 'button');
     li.setAttribute('aria-label', 'נגן את ' + s.name);
-    li.innerHTML =
-      '<span class="go"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>' +
-      '<span class="t-main"><span class="t-name"></span>' +
-      '<span class="t-sub"></span></span>';
-    const nowPlaying = current && current.id === s.id && playing;
-    li.querySelector('.t-sub').textContent = nowPlaying ? 'מתנגן עכשיו' : fmt(s.seconds);
+    li.innerHTML = artHTML(s.id, 'sm') +
+      '<span class="t-main"><span class="t-name"></span><span class="t-sub"></span></span>';
     li.querySelector('.t-name').textContent = s.name;
+    const sub = li.querySelector('.t-sub');
+    if (nowPlaying) {
+      sub.innerHTML = '<span class="bars"><i></i><i></i><i></i></span>מתנגן עכשיו';
+    } else {
+      sub.textContent = fmt(s.seconds);
+    }
     const go = () => openSong(s.id, 'push');
     li.addEventListener('click', go);
     li.addEventListener('keydown', e => {
@@ -276,13 +377,13 @@ function renderList() {
   }));
 }
 
-/* ---------- screens ---------- */
+/* ---------- מסכים ---------- */
 const idxOf = id => SONGS.findIndex(s => s.id === id);
 const neighbour = d => {
   const i = idxOf(current && current.id);
   return i < 0 ? null : (SONGS[i + d] || null);
 };
-/* warm the first chunk of the next file so the handover is near-instant */
+/* משיכה מראש של תחילת השיר הבא, כדי שהמעבר יהיה כמעט מיידי */
 function prefetchNext() {
   const n = neighbour(1);
   if (!n) return;
@@ -300,6 +401,13 @@ function openSong(id, mode) {
       audio.addEventListener('loadedmetadata', () => { try { audio.currentTime = at; } catch (e) {} }, { once: true });
     }
   }
+  const [c1, c2] = look(id);
+  $('playerView').style.setProperty('--c1', c1);
+  $('playerView').style.setProperty('--c2', c2);
+  const art = $('pArt');
+  art.style.setProperty('--c1', c1);
+  art.style.setProperty('--c2', c2);
+  art.innerHTML = '<svg viewBox="0 0 24 24">' + G[look(id)[2]] + '</svg>';
   $('pName').textContent = song.name;
   $('listView').hidden = true;
   $('playerView').hidden = false;
@@ -309,7 +417,7 @@ function openSong(id, mode) {
   const entry = [{ song: id }, '', '#' + encodeURIComponent(id)];
   if (mode === 'push') history.pushState(...entry);
   else if (mode === 'replace') history.replaceState(...entry);
-  audio.play().catch(() => {});   /* the tap that got us here counts as the gesture */
+  audio.play().catch(() => {});   /* הלחיצה שהביאה לכאן נחשבת למחווה של המשתמש */
   prefetchNext();
 }
 
@@ -323,8 +431,8 @@ function showList(push) {
 function openFromHash() {
   const id = decodeURIComponent((location.hash || '').replace(/^#/, ''));
   if (id && SONGS.some(s => s.id === id)) {
-    /* someone opened a single-song link: put the list underneath it in history,
-       so Back shows the list instead of leaving the site */
+    /* מישהו נכנס לקישור של שיר בודד: שמים את הרשימה מתחתיו בהיסטוריה,
+       כדי שכפתור החזור יראה אותה במקום לצאת מהאתר */
     history.replaceState({ song: null }, '', location.pathname + location.search);
     openSong(id, 'push');
   } else {
@@ -338,7 +446,7 @@ window.addEventListener('popstate', e => {
   if (id) openSong(id, 'none'); else showList(false);
 });
 
-/* ---------- playback ---------- */
+/* ---------- נגינה ---------- */
 function paint() {
   const pauseIcon = '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
   const playIcon = '<path d="M8 5.5v13l11-6.5z"/>';
@@ -346,8 +454,10 @@ function paint() {
   const next = neighbour(1), prev = neighbour(-1);
   $('pPos').textContent = 'שיר ' + (idxOf(current && current.id) + 1) + ' מתוך ' + SONGS.length;
   $('pNext').hidden = !next;
-  if (next) $('pNext').innerHTML = 'הבא בתור: <b></b>';
-  if (next) $('pNext').querySelector('b').textContent = next.name;
+  if (next) {
+    $('pNext').innerHTML = 'הבא בתור: <b></b>';
+    $('pNext').querySelector('b').textContent = next.name;
+  }
   $('nextSong').disabled = !next;
   $('prevSong').disabled = !prev;
   $('play').setAttribute('aria-label', playing ? 'השהה' : 'נגן');
@@ -387,6 +497,8 @@ $('back15').addEventListener('click', () => { audio.currentTime = Math.max(0, au
 $('fwd15').addEventListener('click', () => {
   audio.currentTime = Math.min((audio.duration || 0) - 1, audio.currentTime + 15);
 });
+$('playAll').addEventListener('click', () => { if (SONGS.length) openSong(SONGS[0].id, 'push'); });
+
 const seek = $('seek');
 ['pointerdown', 'touchstart', 'keydown'].forEach(e => seek.addEventListener(e, () => { seeking = true; }));
 seek.addEventListener('input', () => {
