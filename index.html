@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0B0F16">
+<meta name="theme-color" content="#F3F6FB">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -14,16 +14,18 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap">
 <style>
-/* נגן מוזיקה - מראה כהה אחד ומכוון, כדי שעטיפות הצבע של השירים יבלטו */
+/* נגן מוזיקה - מראה בהיר אחד ומכוון, והעטיפות הצבעוניות נושאות את הצבע */
 :root{
-  color-scheme:dark;
-  --bg:#0B0F16;
-  --bg-2:#121825;
-  --card:#161E2C;
-  --line:#242E40;
-  --ink:#F2F5F9;
-  --muted:#93A1B5;
-  --muted-2:#6B7A91;
+  color-scheme:light;
+  --bg:#F3F6FB;
+  --bg-2:#E7ECF6;
+  --card:#FFFFFF;
+  --line:#DCE3EF;
+  --ink:#121825;
+  --muted:#5C6A80;
+  --muted-2:#8B97A9;
+  --accent:#00567A;
+  --playing:#1C8A4E;
   --c1:#5B8DEF; --c2:#2C4C9B;      /* צבע השיר הפעיל, נדרס מהקוד */
 }
 *{box-sizing:border-box}
@@ -52,13 +54,16 @@ button{font-family:inherit}
   fill:none; stroke:#fff; stroke-width:1.7;
   stroke-linecap:round; stroke-linejoin:round;
 }
-.art.sm{width:60px; height:60px; border-radius:15px}
+.art.sm{
+  width:60px; height:60px; border-radius:15px;
+  box-shadow:0 4px 12px rgba(18,24,37,.13);
+}
 .art.sm svg{width:30px; height:30px}
 .art.lg{
   /* גם גובה המסך נספר, כדי שבטלפון נמוך הפקדים לא ייצאו מהמסך */
   width:min(64vw,34vh,250px); height:min(64vw,34vh,250px);
   border-radius:clamp(20px,5vw,34px);
-  box-shadow:0 26px 60px rgba(0,0,0,.55);
+  box-shadow:0 22px 48px rgba(18,24,37,.22);
 }
 .art.lg svg{width:40%; height:40%; stroke-width:1.5}
 
@@ -74,9 +79,10 @@ button{font-family:inherit}
 .playall{
   margin-top:18px; width:100%; cursor:pointer;
   display:flex; align-items:center; justify-content:center; gap:9px;
-  font-size:16px; font-weight:700; color:#0B0F16;
-  background:linear-gradient(135deg,#9FE870,#4FD1A5);
+  font-size:16px; font-weight:700; color:#fff;
+  background:linear-gradient(135deg,#0B6C93,#00567A);
   border:none; border-radius:16px; padding:14px;
+  box-shadow:0 8px 20px rgba(0,86,122,.26);
   -webkit-tap-highlight-color:transparent;
 }
 .playall svg{width:19px; height:19px; fill:currentColor}
@@ -109,10 +115,10 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
   display:block; font-size:13px; color:var(--muted); margin-top:2px;
   font-variant-numeric:tabular-nums;
 }
-.track.playing .t-name{color:#9FE870}
-.track.playing .t-sub{color:#9FE870; font-weight:700}
+.track.playing .t-name{color:var(--playing)}
+.track.playing .t-sub{color:var(--playing); font-weight:700}
 .bars{display:inline-flex; align-items:flex-end; gap:2px; height:11px; margin-inline-end:6px; vertical-align:-1px}
-.bars i{width:2.5px; background:#9FE870; border-radius:1px; animation:eq .9s ease-in-out infinite}
+.bars i{width:2.5px; background:var(--playing); border-radius:1px; animation:eq .9s ease-in-out infinite}
 .bars i:nth-child(1){height:40%; animation-delay:-.2s}
 .bars i:nth-child(2){height:100%; animation-delay:-.5s}
 .bars i:nth-child(3){height:65%}
@@ -125,12 +131,12 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
   position:fixed; inset:0; z-index:20; background:var(--bg);
   display:flex; flex-direction:column; overflow-y:auto;
 }
-.glow{                               /* הצבע של השיר ממלא את הרקע */
+.glow{                               /* הצבע של השיר שוטף את ראש המסך */
   position:absolute; inset:0; pointer-events:none;
   background:
-    radial-gradient(90% 55% at 50% 2%, var(--c1), transparent 70%),
-    radial-gradient(70% 45% at 50% 0%, var(--c2), transparent 75%);
-  opacity:.26; transition:opacity .4s ease;
+    radial-gradient(95% 52% at 50% 0%, var(--c1), transparent 68%),
+    radial-gradient(70% 38% at 50% 0%, var(--c2), transparent 72%);
+  opacity:.34; transition:opacity .4s ease;
 }
 .pbar{
   position:relative; z-index:1; flex:none;
@@ -140,12 +146,12 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
 .back{
   cursor:pointer; display:grid; place-items:center; flex:none;
   width:42px; height:42px; border-radius:50%;
-  background:rgba(255,255,255,.1); color:var(--ink); border:none;
+  background:rgba(255,255,255,.75); color:var(--ink); border:1px solid var(--line);
   -webkit-tap-highlight-color:transparent;
 }
 .back svg{width:19px; height:19px; fill:currentColor}
 .pbar-label{
-  font-size:11.5px; font-weight:700; letter-spacing:.16em; color:rgba(255,255,255,.62);
+  font-size:11.5px; font-weight:700; letter-spacing:.16em; color:var(--muted);
 }
 .stage{
   position:relative; z-index:1; flex:1 1 auto; min-height:0;
@@ -156,10 +162,10 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
   margin:26px 0 0; font-size:28px; font-weight:800; line-height:1.2; letter-spacing:-.02em;
   max-width:100%;
 }
-.p-state{margin:6px 0 0; font-size:14px; color:rgba(255,255,255,.66)}
+.p-state{margin:6px 0 0; font-size:14px; color:var(--muted)}
 .p-pos{
   margin:4px 0 0; font-size:11.5px; font-weight:700; letter-spacing:.14em;
-  color:rgba(255,255,255,.45); font-variant-numeric:tabular-nums;
+  color:var(--muted-2); font-variant-numeric:tabular-nums;
 }
 .panel{
   position:relative; z-index:1; flex:none;
@@ -169,11 +175,11 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
 /* ציר זמן נקרא משמאל לימין גם בממשק עברי */
 input[type=range]{
   direction:ltr; width:100%; margin:0; height:26px; cursor:pointer;
-  background:transparent; accent-color:#fff;
+  background:transparent; accent-color:var(--c2);
 }
 .times{
   direction:ltr; display:flex; justify-content:space-between; margin-top:-6px;
-  font-size:12px; color:rgba(255,255,255,.6); font-variant-numeric:tabular-nums;
+  font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums;
 }
 .pcontrols{
   direction:ltr; display:flex; align-items:center; justify-content:center;
@@ -184,18 +190,20 @@ input[type=range]{
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
   border-radius:50%; -webkit-tap-highlight-color:transparent;
 }
-.pcontrols .ctl, .pcontrols .skip{width:58px; height:58px; background:rgba(255,255,255,.09)}
+.pcontrols .ctl, .pcontrols .skip{
+  width:58px; height:58px; background:var(--card); border:1px solid var(--line);
+}
 .pcontrols .ctl svg, .pcontrols .skip svg{width:21px; height:21px; fill:currentColor}
-.pcontrols .lbl{font-size:9.5px; font-weight:700; color:rgba(255,255,255,.6); white-space:nowrap}
+.pcontrols .lbl{font-size:9.5px; font-weight:700; color:var(--muted); white-space:nowrap}
 .pcontrols .big{
-  width:78px; height:78px; background:#fff; color:#0B0F16; flex:none;
-  box-shadow:0 12px 30px rgba(0,0,0,.45);
+  width:78px; height:78px; background:var(--ink); color:#fff; flex:none;
+  box-shadow:0 12px 26px rgba(18,24,37,.3);
 }
 .pcontrols .big svg{width:30px; height:30px; fill:currentColor}
 .pcontrols button:active{transform:scale(.96)}
-.pcontrols button:disabled{opacity:.28; cursor:default}
+.pcontrols button:disabled{opacity:.34; cursor:default}
 .p-next{
-  margin:14px 0 0; text-align:center; font-size:13px; color:rgba(255,255,255,.55);
+  margin:14px 0 0; text-align:center; font-size:13px; color:var(--muted);
 }
 .p-next b{color:var(--ink); font-weight:700}
 
@@ -212,7 +220,7 @@ input[type=range]{
   .p-name{margin-top:16px; font-size:24px}
   .pcontrols{padding-top:4px}
 }
-:focus-visible{outline:3px solid #9FE870; outline-offset:3px}
+:focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
 </style>
 </head>
