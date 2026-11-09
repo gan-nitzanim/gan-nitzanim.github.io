@@ -797,7 +797,22 @@ $('miniOpen').addEventListener('click', () => { if (current) openSong(current.id
 $('miniPlay').addEventListener('click', () => playing ? audio.pause() : audio.play().catch(() => {}));
 
 $('q').addEventListener('input', e => { query = e.target.value; renderList(); });
-window.addEventListener('pagehide', () => { if (current) save(current.id, audio.currentTime); });
+/* סגירת האתר עוצרת את המוזיקה ומנקה את ההתראה.
+   נעילת מסך או מעבר לאפליקציה אחרת מפעילים visibilitychange בלבד -
+   ובהם ההשמעה ממשיכה, כפי שביקש ערן. */
+function stopOnClose(keepPlaying) {
+  if (current) save(current.id, audio.currentTime);
+  if (keepPlaying) return;
+  try { audio.pause(); } catch (e) {}
+  try {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.playbackState = 'none';
+      navigator.mediaSession.metadata = null;
+    }
+  } catch (e) {}
+}
+window.addEventListener('pagehide', e => stopOnClose(e.persisted));
+window.addEventListener('beforeunload', () => stopOnClose(false));
 
 load().catch(() => {
   $('heroMeta').textContent = 'לא ניתן לטעון את רשימת השירים';
