@@ -7,6 +7,13 @@
   "bytes": 27300908
  },
  {
+  "id": "shabbat",
+  "name": "שבת",
+  "file": "audio/shabbat.mp3",
+  "seconds": 897.8,
+  "bytes": 21547225
+ },
+ {
   "id": "kids",
   "name": "שירי ילדים",
   "file": "audio/kids.mp3",
@@ -68,6 +75,13 @@
   "file": "audio/family.mp3",
   "seconds": 2269.0,
   "bytes": 22690983
+ },
+ {
+  "id": "purim",
+  "name": "פורים",
+  "file": "audio/purim.mp3",
+  "seconds": 2473.8,
+  "bytes": 59372309
  },
  {
   "id": "spring-1",
