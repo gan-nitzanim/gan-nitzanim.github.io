@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F3F6FB">
+<meta name="theme-color" content="#F2F2F7">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -14,27 +14,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&display=swap">
 <style>
-/* נגן מוזיקה - מראה בהיר אחד ומכוון, והעטיפות הצבעוניות נושאות את הצבע */
+/* נגן מוזיקה בשפת עיצוב של iOS: רקע אפור-מערכת, חומרים שקופים,
+   קווי הפרדה דקים, וכותרת ענק. העטיפות הצבעוניות נושאות את הצבע. */
 :root{
   color-scheme:light;
-  --bg:#F3F6FB;
-  --bg-2:#E7ECF6;
+  --bg:#F2F2F7;                 /* systemGroupedBackground */
   --card:#FFFFFF;
-  --line:#DCE3EF;
-  --ink:#121825;
-  --muted:#5C6A80;
-  --muted-2:#8B97A9;
+  --fill:rgba(120,120,128,.12); /* systemFill */
+  --fill-2:rgba(120,120,128,.08);
+  --line:rgba(60,60,67,.16);    /* separator */
+  --ink:#1C1C1E;                /* label */
+  --muted:#8E8E93;              /* secondaryLabel */
+  --muted-2:#AEAEB2;            /* tertiaryLabel */
   --accent:#00567A;
-  --playing:#1C8A4E;
-  --c1:#5B8DEF; --c2:#2C4C9B;      /* צבע השיר הפעיל, נדרס מהקוד */
+  --playing:#17913F;
+  --c1:#5B8DEF; --c2:#2C4C9B;   /* צבע השיר הפעיל, נדרס מהקוד */
 }
 *{box-sizing:border-box}
 [hidden]{display:none !important}
 html,body{margin:0; padding:0; background:var(--bg)}
 body{
   color:var(--ink);
-  font-family:"Assistant",-apple-system,"Segoe UI",system-ui,sans-serif;
-  font-size:16px; line-height:1.5; -webkit-text-size-adjust:100%;
+  font-family:"Assistant",-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;
+  font-size:16px; line-height:1.45; -webkit-text-size-adjust:100%;
   -webkit-font-smoothing:antialiased;
 }
 button{font-family:inherit}
@@ -45,74 +47,75 @@ button{font-family:inherit}
   background:linear-gradient(145deg, var(--c1) 0%, var(--c2) 100%);
   overflow:hidden;
 }
-.art::after{                      /* ברק עדין בפינה, כמו עטיפת אלבום */
+.art::after{
   content:""; position:absolute; inset:0;
-  background:radial-gradient(120% 90% at 18% 8%, rgba(255,255,255,.34), transparent 60%);
+  background:radial-gradient(120% 90% at 18% 8%, rgba(255,255,255,.32), transparent 60%);
 }
 .art svg{
   position:relative; z-index:1;
   fill:none; stroke:#fff; stroke-width:1.7;
   stroke-linecap:round; stroke-linejoin:round;
 }
-.art.sm{
-  width:60px; height:60px; border-radius:15px;
-  box-shadow:0 4px 12px rgba(18,24,37,.13);
-}
-.art.sm svg{width:30px; height:30px}
+.art.xs{width:46px; height:46px; border-radius:11px}
+.art.xs svg{width:23px; height:23px; stroke-width:1.9}
+.art.sm{width:58px; height:58px; border-radius:13px}
+.art.sm svg{width:29px; height:29px}
 .art.lg{
-  /* גם גובה המסך נספר, כדי שבטלפון נמוך הפקדים לא ייצאו מהמסך */
   width:min(64vw,34vh,250px); height:min(64vw,34vh,250px);
-  border-radius:clamp(20px,5vw,34px);
-  box-shadow:0 22px 48px rgba(18,24,37,.22);
+  border-radius:clamp(18px,4.6vw,30px);
+  box-shadow:0 20px 44px rgba(0,0,0,.2);
 }
 .art.lg svg{width:40%; height:40%; stroke-width:1.5}
 
 /* ---------- מסך הרשימה ---------- */
 #listView{max-width:560px; margin-inline:auto; padding:0 16px 40px}
-.top{padding:30px 4px 18px}
-.top h1{
-  margin:0; font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1.15;
-}
-.top .meta{
-  margin:7px 0 0; font-size:14.5px; color:var(--muted); font-variant-numeric:tabular-nums;
-}
+.top{padding:26px 4px 14px}
+.top h1{margin:0; font-size:34px; font-weight:800; letter-spacing:-.032em; line-height:1.1}
+.top .meta{margin:5px 0 0; font-size:14.5px; color:var(--muted); font-variant-numeric:tabular-nums}
 .playall{
-  margin-top:18px; width:100%; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; gap:9px;
-  font-size:16px; font-weight:700; color:#fff;
-  background:linear-gradient(135deg,#0B6C93,#00567A);
-  border:none; border-radius:16px; padding:14px;
-  box-shadow:0 8px 20px rgba(0,86,122,.26);
+  margin-top:16px; width:100%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  font-size:16.5px; font-weight:700; color:#fff;
+  background:var(--accent); border:none; border-radius:14px; padding:14px;
   -webkit-tap-highlight-color:transparent;
 }
-.playall svg{width:19px; height:19px; fill:currentColor}
-.playall:active{transform:scale(.99)}
+.playall svg{width:18px; height:18px; fill:currentColor}
+.playall:active{opacity:.85}
 
-.search{position:relative; margin:18px 0 6px}
+.search{position:relative; margin:16px 0 2px}
 .search input{
-  width:100%; font:inherit; color:var(--ink); background:var(--card);
-  border:1px solid var(--line); border-radius:14px; padding:12px 42px 12px 14px;
+  width:100%; font:inherit; font-size:16px; color:var(--ink);
+  background:var(--fill); border:none; border-radius:11px; padding:11px 40px 11px 12px;
 }
-.search input::placeholder{color:var(--muted-2)}
+.search input::placeholder{color:var(--muted)}
 .search svg{
-  position:absolute; inset-inline-end:14px; inset-block-start:50%; transform:translateY(-50%);
-  width:18px; height:18px; fill:var(--muted-2); pointer-events:none;
+  position:absolute; inset-inline-end:13px; inset-block-start:50%; transform:translateY(-50%);
+  width:17px; height:17px; fill:var(--muted); pointer-events:none;
 }
 
-ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direction:column}
-.track{
-  display:flex; align-items:center; gap:14px; padding:9px 6px;
-  border-radius:16px; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  transition:background .15s ease;
+/* רשימה בסגנון iOS: לבן, פינות מעוגלות, וקו הפרדה דק שמתחיל אחרי העטיפה */
+ol.tracks{
+  list-style:none; margin:14px 0 0; padding:0;
+  background:var(--card); border-radius:14px; overflow:hidden;
 }
-.track:active{background:var(--bg-2)}
+.track{
+  position:relative; display:flex; align-items:center; gap:13px;
+  padding:9px 13px; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:background .12s ease;
+}
+.track + .track::before{
+  content:""; position:absolute; inset-block-start:0;
+  inset-inline-start:84px; inset-inline-end:0;
+  height:1px; background:var(--line); transform:scaleY(.5);
+}
+.track:active{background:var(--fill-2)}
 .t-main{min-width:0; flex:1}
 .t-name{
-  display:block; font-weight:700; font-size:16.5px;
+  display:block; font-weight:600; font-size:16.5px; letter-spacing:-.01em;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .t-sub{
-  display:block; font-size:13px; color:var(--muted); margin-top:2px;
+  display:block; font-size:13px; color:var(--muted); margin-top:1px;
   font-variant-numeric:tabular-nums;
 }
 .track.playing .t-name{color:var(--playing)}
@@ -124,55 +127,102 @@ ol.tracks{list-style:none; margin:0; padding:10px 0 0; display:flex; flex-direct
 .bars i:nth-child(3){height:65%}
 @keyframes eq{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
 .empty{text-align:center; color:var(--muted); padding:40px 20px}
-.foot{padding:26px 10px 0; text-align:center; color:var(--muted-2); font-size:12.5px; line-height:1.7}
+.foot{padding:22px 10px 0; text-align:center; color:var(--muted-2); font-size:12.5px; line-height:1.7}
+
+/* ---------- סרגל "מתנגן עכשיו" ---------- */
+body.has-mini #listView{padding-bottom:116px}
+.mini{
+  position:fixed; inset-inline:0; inset-block-end:0; z-index:15;
+  background:rgba(249,249,252,.82);
+  -webkit-backdrop-filter:saturate(180%) blur(22px);
+  backdrop-filter:saturate(180%) blur(22px);
+  border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
+  animation:miniUp .26s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes miniUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mini-prog{height:2px; background:rgba(120,120,128,.16); overflow:hidden}
+.mini-prog span{
+  display:block; height:100%; width:0;
+  background:linear-gradient(90deg, var(--mc1,#5B8DEF), var(--mc2,#2C4C9B));
+  transition:width .25s linear;
+}
+.mini-row{max-width:560px; margin-inline:auto; display:flex; align-items:center; gap:12px; padding:8px 14px}
+.mini-open{
+  flex:1; min-width:0; display:flex; align-items:center; gap:12px;
+  background:none; border:none; padding:0; cursor:pointer; text-align:start;
+  color:var(--ink); -webkit-tap-highlight-color:transparent;
+}
+.mini-main{min-width:0; flex:1}
+.mini-name{
+  display:block; font-weight:600; font-size:15px; letter-spacing:-.01em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mini-state{display:block; font-size:12.5px; color:var(--muted); margin-top:1px}
+.mini-play{
+  flex:none; width:46px; height:46px; border-radius:50%; cursor:pointer;
+  background:var(--fill); color:var(--ink); border:none; display:grid; place-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.mini-play svg{width:20px; height:20px; fill:currentColor}
+.mini-open:active{opacity:.6}
+.mini-play:active{background:rgba(120,120,128,.2)}
 
 /* ---------- מסך הנגן ---------- */
 #playerView{
   position:fixed; inset:0; z-index:20; background:var(--bg);
   display:flex; flex-direction:column; overflow-y:auto;
+  animation:rise .32s cubic-bezier(.22,.72,.24,1);
 }
-.glow{                               /* הצבע של השיר שוטף את ראש המסך */
+@keyframes rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.glow{
   position:absolute; inset:0; pointer-events:none;
   background:
     radial-gradient(95% 52% at 50% 0%, var(--c1), transparent 68%),
     radial-gradient(70% 38% at 50% 0%, var(--c2), transparent 72%);
-  opacity:.34; transition:opacity .4s ease;
+  opacity:.3; transition:opacity .4s ease;
 }
 .pbar{
   position:relative; z-index:1; flex:none;
-  padding:calc(12px + env(safe-area-inset-top)) 16px 4px;
-  display:flex; align-items:center; gap:12px;
+  padding:calc(11px + env(safe-area-inset-top)) 14px 2px;
+  display:flex; align-items:center; gap:10px;
 }
-.back{
-  cursor:pointer; display:grid; place-items:center; flex:none;
-  width:42px; height:42px; border-radius:50%;
-  background:rgba(255,255,255,.75); color:var(--ink); border:1px solid var(--line);
+.back, .sleep{
+  cursor:pointer; border:none; color:var(--ink);
+  background:rgba(255,255,255,.7);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
   -webkit-tap-highlight-color:transparent;
 }
-.back svg{width:19px; height:19px; fill:currentColor}
+.back{width:40px; height:40px; border-radius:50%; display:grid; place-items:center; flex:none}
+.back svg{width:18px; height:18px; fill:currentColor}
 .pbar-label{
-  font-size:11.5px; font-weight:700; letter-spacing:.16em; color:var(--muted);
+  flex:1; font-size:11.5px; font-weight:700; letter-spacing:.14em; color:var(--muted);
 }
+.sleep{
+  flex:none; display:flex; align-items:center; gap:6px;
+  height:40px; border-radius:20px; padding:0 14px;
+  font-size:13px; font-weight:600; font-variant-numeric:tabular-nums;
+}
+.sleep svg{width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.sleep.on{background:var(--accent); color:#fff}
+.back:active, .sleep:active{opacity:.6}
+
 .stage{
   position:relative; z-index:1; flex:1 1 auto; min-height:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:4px; text-align:center; padding:8px 24px;
+  gap:3px; text-align:center; padding:8px 24px;
 }
-.p-name{
-  margin:26px 0 0; font-size:28px; font-weight:800; line-height:1.2; letter-spacing:-.02em;
-  max-width:100%;
-}
-.p-state{margin:6px 0 0; font-size:14px; color:var(--muted)}
+.p-name{margin:24px 0 0; font-size:27px; font-weight:800; line-height:1.2; letter-spacing:-.03em; max-width:100%}
+.p-state{margin:5px 0 0; font-size:14px; color:var(--muted)}
 .p-pos{
-  margin:4px 0 0; font-size:11.5px; font-weight:700; letter-spacing:.14em;
+  margin:3px 0 0; font-size:11.5px; font-weight:700; letter-spacing:.13em;
   color:var(--muted-2); font-variant-numeric:tabular-nums;
 }
 .panel{
   position:relative; z-index:1; flex:none;
-  padding:10px 24px calc(20px + env(safe-area-inset-bottom));
-  display:flex; flex-direction:column; gap:4px;
+  padding:8px 24px calc(18px + env(safe-area-inset-bottom));
+  display:flex; flex-direction:column; gap:3px;
 }
-/* ציר זמן נקרא משמאל לימין גם בממשק עברי */
 input[type=range]{
   direction:ltr; width:100%; margin:0; height:26px; cursor:pointer;
   background:transparent; accent-color:var(--c2);
@@ -181,31 +231,46 @@ input[type=range]{
   direction:ltr; display:flex; justify-content:space-between; margin-top:-6px;
   font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums;
 }
-.pcontrols{
-  direction:ltr; display:flex; align-items:center; justify-content:center;
-  gap:12px; padding-top:10px;
-}
+.pcontrols{direction:ltr; display:flex; align-items:center; justify-content:center; gap:12px; padding-top:10px}
 .pcontrols button{
   flex:none; border:none; background:transparent; color:var(--ink); cursor:pointer;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
   border-radius:50%; -webkit-tap-highlight-color:transparent;
 }
-.pcontrols .ctl, .pcontrols .skip{
-  width:58px; height:58px; background:var(--card); border:1px solid var(--line);
-}
+.pcontrols .ctl, .pcontrols .skip{width:58px; height:58px; background:var(--fill)}
 .pcontrols .ctl svg, .pcontrols .skip svg{width:21px; height:21px; fill:currentColor}
-.pcontrols .lbl{font-size:9.5px; font-weight:700; color:var(--muted); white-space:nowrap}
+.pcontrols .lbl{font-size:9.5px; font-weight:600; color:var(--muted); white-space:nowrap}
 .pcontrols .big{
   width:78px; height:78px; background:var(--ink); color:#fff; flex:none;
-  box-shadow:0 12px 26px rgba(18,24,37,.3);
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
 }
 .pcontrols .big svg{width:30px; height:30px; fill:currentColor}
-.pcontrols button:active{transform:scale(.96)}
-.pcontrols button:disabled{opacity:.34; cursor:default}
-.p-next{
-  margin:14px 0 0; text-align:center; font-size:13px; color:var(--muted);
-}
+.pcontrols button:active{opacity:.6}
+.pcontrols button:disabled{opacity:.3; cursor:default}
+.p-next{margin:14px 0 0; text-align:center; font-size:13px; color:var(--muted)}
 .p-next b{color:var(--ink); font-weight:700}
+
+/* ---------- גיליון הטיימר ---------- */
+.sheet{position:fixed; inset:0; z-index:30; display:flex; align-items:flex-end; justify-content:center}
+.sheet-bg{position:absolute; inset:0; background:rgba(0,0,0,.3)}
+.sheet-card{
+  position:relative; width:100%; max-width:430px;
+  margin:0 8px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(249,249,252,.96);
+  -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px);
+  border-radius:16px; overflow:hidden;
+  animation:sheetUp .28s cubic-bezier(.22,.72,.24,1);
+}
+@keyframes sheetUp{from{transform:translateY(16px); opacity:0}to{transform:translateY(0); opacity:1}}
+.sheet-title{margin:0; padding:14px; text-align:center; font-size:13px; color:var(--muted); border-bottom:1px solid var(--line)}
+.sheet-card button{
+  display:block; width:100%; background:none; border:none; cursor:pointer;
+  padding:15px; font-size:17.5px; color:var(--accent);
+  border-bottom:1px solid var(--line); -webkit-tap-highlight-color:transparent;
+}
+.sheet-card button:last-child{border-bottom:none; font-weight:700}
+.sheet-card button:active{background:var(--fill)}
+.sheet-card button.sel{font-weight:800}
 
 @media (max-width:380px){
   .panel{padding-inline:14px}
@@ -217,50 +282,9 @@ input[type=range]{
   .pcontrols .big svg{width:26px; height:26px}
 }
 @media (max-height:640px){
-  .p-name{margin-top:16px; font-size:24px}
+  .p-name{margin-top:14px; font-size:23px}
   .pcontrols{padding-top:4px}
 }
-/* ---------- סרגל "מתנגן עכשיו" בתחתית הרשימה ---------- */
-.art.xs{width:46px; height:46px; border-radius:12px; box-shadow:0 3px 9px rgba(18,24,37,.16)}
-.art.xs svg{width:23px; height:23px; stroke-width:1.9}
-body.has-mini #listView{padding-bottom:116px}
-.mini{
-  position:fixed; inset-inline:0; inset-block-end:0; z-index:15;
-  background:rgba(255,255,255,.92); backdrop-filter:blur(14px);
-  border-top:1px solid var(--line);
-  box-shadow:0 -6px 24px rgba(18,24,37,.1);
-  padding-bottom:env(safe-area-inset-bottom);
-  animation:miniUp .26s cubic-bezier(.2,.7,.3,1);
-}
-@keyframes miniUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mini-prog{height:3px; background:var(--bg-2); overflow:hidden}
-.mini-prog span{
-  display:block; height:100%; width:0;
-  background:linear-gradient(90deg, var(--mc1,#5B8DEF), var(--mc2,#2C4C9B));
-  transition:width .25s linear;
-}
-.mini-row{max-width:560px; margin-inline:auto; display:flex; align-items:center; gap:12px; padding:9px 14px}
-.mini-open{
-  flex:1; min-width:0; display:flex; align-items:center; gap:12px;
-  background:none; border:none; padding:0; cursor:pointer; text-align:start;
-  color:var(--ink); -webkit-tap-highlight-color:transparent;
-}
-.mini-main{min-width:0; flex:1}
-.mini-name{
-  display:block; font-weight:700; font-size:15px;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-.mini-state{display:block; font-size:12.5px; color:var(--muted); margin-top:1px}
-.mini-play{
-  flex:none; width:48px; height:48px; border-radius:50%; cursor:pointer;
-  background:var(--ink); color:#fff; border:none; display:grid; place-items:center;
-  -webkit-tap-highlight-color:transparent;
-}
-.mini-play svg{width:21px; height:21px; fill:currentColor}
-.mini-open:active, .mini-play:active{transform:scale(.97)}
-#playerView{animation:rise .3s cubic-bezier(.2,.7,.3,1)}
-@keyframes rise{from{transform:translateY(100%)}to{transform:translateY(0)}}
-
 :focus-visible{outline:3px solid var(--accent); outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important; animation:none !important}}
 </style>
@@ -295,6 +319,10 @@ body.has-mini #listView{padding-bottom:116px}
       <svg viewBox="0 0 24 24"><path d="M10 6l1.4 1.4L7.8 11H20v2H7.8l3.6 3.6L10 18l-6-6z"/></svg>
     </button>
     <span class="pbar-label">מתנגן עכשיו</span>
+    <button class="sleep" id="sleepBtn" aria-label="טיימר שינה">
+      <svg viewBox="0 0 24 24"><path d="M20.5 14.4A8.6 8.6 0 019.6 3.5 8.6 8.6 0 1020.5 14.4z"/></svg>
+      <span id="sleepLbl">טיימר</span>
+    </button>
   </div>
 
   <div class="stage">
@@ -343,6 +371,19 @@ body.has-mini #listView{padding-bottom:116px}
     <button class="mini-play" id="miniPlay" aria-label="נגן">
       <svg id="miniIcon" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
     </button>
+  </div>
+</div>
+
+<div class="sheet" id="sleepSheet" hidden>
+  <div class="sheet-bg" id="sheetBg"></div>
+  <div class="sheet-card">
+    <p class="sheet-title">הפסקת ההשמעה בעוד</p>
+    <button data-m="15">15 דקות</button>
+    <button data-m="30">30 דקות</button>
+    <button data-m="45">45 דקות</button>
+    <button data-m="60">שעה</button>
+    <button data-m="end">בסוף השיר הנוכחי</button>
+    <button data-m="0">ביטול הטיימר</button>
   </div>
 </div>
 
@@ -549,8 +590,7 @@ function paint() {
   $('pState').textContent = buffering ? 'טוען…' : (playing ? 'מתנגן' : 'מושהה');
   if (!$('mini').hidden || current) syncMini();
   if (current && 'mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-      title: current.name, artist: 'גן ניצנים' });
+    if (metaId !== current.id) { metaId = current.id; setMeta(current); }
     navigator.mediaSession.playbackState = playing ? 'playing' : 'paused';
   }
 }
@@ -571,6 +611,7 @@ audio.addEventListener('timeupdate', () => {
 });
 audio.addEventListener('ended', () => {
   if (current) save(current.id, 0);
+  if (sleepEndOfSong) { setSleep(0); playing = false; paint(); syncMini(); return; }
   const next = neighbour(1);
   if (next) { openSong(next.id, 'replace'); return; }
   playing = false; paint();
@@ -617,6 +658,91 @@ if ('mediaSession' in navigator) {
     });
   } catch (e) {}
 }
+
+/* ---------- עטיפה למסך הנעילה ---------- */
+const coverCache = new Map();
+function coverSVG(id) {
+  const [c1, c2, g] = look(id);
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 24 24">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/>' +
+    '</linearGradient></defs><rect width="24" height="24" fill="url(#g)"/>' +
+    '<g fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"' +
+    ' transform="translate(4.8 4.8) scale(0.6)">' + G[g] + '</g></svg>';
+}
+function coverPNG(id) {
+  if (coverCache.has(id)) return Promise.resolve(coverCache.get(id));
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const c = document.createElement('canvas');
+        c.width = c.height = 512;
+        c.getContext('2d').drawImage(img, 0, 0, 512, 512);
+        const url = c.toDataURL('image/png');
+        coverCache.set(id, url);
+        res(url);
+      } catch (e) { res(null); }
+    };
+    img.onerror = () => res(null);
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(coverSVG(id));
+  });
+}
+let metaId = null;
+async function setMeta(song) {
+  const base = { title: song.name, artist: 'גן ניצנים' };
+  navigator.mediaSession.metadata = new MediaMetadata(base);
+  const url = await coverPNG(song.id);
+  if (url && current && current.id === song.id) {
+    navigator.mediaSession.metadata = new MediaMetadata(Object.assign({}, base, {
+      artwork: [{ src: url, sizes: '512x512', type: 'image/png' }]
+    }));
+  }
+}
+
+/* ---------- טיימר שינה ---------- */
+let sleepAt = 0, sleepEndOfSong = false, sleepTimer = null;
+function sleepLabel() {
+  if (sleepEndOfSong) return 'סוף השיר';
+  if (!sleepAt) return 'טיימר';
+  const left = Math.max(0, sleepAt - Date.now());
+  const m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+function renderSleep() {
+  $('sleepBtn').classList.toggle('on', !!sleepAt || sleepEndOfSong);
+  $('sleepLbl').textContent = sleepLabel();
+}
+function setSleep(v) {
+  clearInterval(sleepTimer);
+  sleepTimer = null; sleepAt = 0; sleepEndOfSong = false;
+  if (v === 'end') {
+    sleepEndOfSong = true;
+  } else if (v > 0) {
+    sleepAt = Date.now() + v * 60000;
+    sleepTimer = setInterval(() => {
+      if (Date.now() >= sleepAt) { audio.pause(); setSleep(0); }
+      else renderSleep();
+    }, 1000);
+  }
+  renderSleep();
+}
+$('sleepBtn').addEventListener('click', () => {
+  const cur = sleepEndOfSong ? 'end' : (sleepAt ? '' : '0');
+  document.querySelectorAll('.sheet-card button').forEach(b =>
+    b.classList.toggle('sel', b.dataset.m === cur));
+  $('sleepSheet').hidden = false;
+});
+$('sleepSheet').addEventListener('click', e => {
+  const b = e.target.closest('button[data-m]');
+  if (b) {
+    setSleep(b.dataset.m === 'end' ? 'end' : Number(b.dataset.m));
+    $('sleepSheet').hidden = true;
+    return;
+  }
+  if (e.target.id === 'sheetBg') $('sleepSheet').hidden = true;
+});
+renderSleep();
 
 /* ---------- סרגל "מתנגן עכשיו" ---------- */
 function syncMini() {
