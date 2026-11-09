@@ -319,6 +319,9 @@ input[type=range]{
       <svg viewBox="0 0 24 24"><path d="M10 6l1.4 1.4L7.8 11H20v2H7.8l3.6 3.6L10 18l-6-6z"/></svg>
     </button>
     <span class="pbar-label">מתנגן עכשיו</span>
+    <button class="back" id="shareBtn" aria-label="שיתוף השיר">
+      <svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><path d="M12 15.5V3.8"/><path d="M8.4 7.4L12 3.8l3.6 3.6"/><path d="M6.2 11.6h-.7a1.8 1.8 0 00-1.8 1.8v5.4a1.8 1.8 0 001.8 1.8h13a1.8 1.8 0 001.8-1.8v-5.4a1.8 1.8 0 00-1.8-1.8h-.7"/></svg>
+    </button>
     <button class="sleep" id="sleepBtn" aria-label="טיימר שינה">
       <svg viewBox="0 0 24 24"><path d="M20.5 14.4A8.6 8.6 0 019.6 3.5 8.6 8.6 0 1020.5 14.4z"/></svg>
       <span id="sleepLbl">טיימר</span>
@@ -467,7 +470,7 @@ async function load() {
   $('heroMeta').textContent =
     SONGS.length + ' שירים · ' + heTime(SONGS.reduce((s, x) => s + x.seconds, 0));
   renderList();
-  openFromHash();
+  openFromLink();
 }
 
 function visible() {
@@ -541,7 +544,7 @@ function openSong(id, mode, keepState) {
   window.scrollTo(0, 0);
   tick();
   paint();
-  const entry = [{ song: id }, '', '#' + encodeURIComponent(id)];
+  const entry = [{ song: id }, '', location.pathname + location.search];
   if (mode === 'push') history.pushState(...entry);
   else if (mode === 'replace') history.replaceState(...entry);
   if (!keepState) audio.play().catch(() => {});  /* הלחיצה שהביאה לכאן נחשבת למחווה של המשתמש */
@@ -558,16 +561,16 @@ function showList(push) {
   if (push) history.pushState({ song: null }, '', location.pathname + location.search);
 }
 
-function openFromHash() {
-  const id = decodeURIComponent((location.hash || '').replace(/^#/, ''));
-  if (id && SONGS.some(s => s.id === id)) {
-    /* מישהו נכנס לקישור של שיר בודד: שמים את הרשימה מתחתיו בהיסטוריה,
-       כדי שכפתור החזור יראה אותה במקום לצאת מהאתר */
-    history.replaceState({ song: null }, '', location.pathname + location.search);
-    openSong(id, 'push');
-  } else {
-    showList(false);
-  }
+function openFromLink() {
+  /* ?song=... הוא הצורה שאנחנו מייצרים בשיתוף; #... נתמך כדי שקישורים
+     שכבר נשלחו בעבר ימשיכו לעבוד */
+  const q = new URLSearchParams(location.search).get('song');
+  const id = decodeURIComponent(q || (location.hash || '').replace(/^#/, ''));
+  /* מנקים את הכתובת תמיד, כדי שרענון, סימנייה או קיצור במסך הבית
+     לא ייפתחו שוב על אותו שיר */
+  history.replaceState({ song: null }, '', location.pathname);
+  if (id && SONGS.some(s => s.id === id)) openSong(id, 'push');
+  else showList(false);
 }
 
 $('back').addEventListener('click', () => history.back());
@@ -703,6 +706,23 @@ async function setMeta(song) {
     }));
   }
 }
+
+/* ---------- שיתוף שיר בודד ---------- */
+let toastTimer = null;
+function toast(msg) {
+  clearTimeout(toastTimer);
+  $('pState').textContent = msg;
+  toastTimer = setTimeout(paint, 2200);
+}
+$('shareBtn').addEventListener('click', async () => {
+  if (!current) return;
+  const url = location.origin + location.pathname + '?song=' + encodeURIComponent(current.id);
+  if (navigator.share) {
+    try { await navigator.share({ title: current.name, url }); return; } catch (e) { return; }
+  }
+  try { await navigator.clipboard.writeText(url); toast('הקישור לשיר הועתק'); }
+  catch (e) { toast('לא ניתן להעתיק'); }
+});
 
 /* ---------- טיימר שינה ---------- */
 let sleepAt = 0, sleepEndOfSong = false, sleepTimer = null;
